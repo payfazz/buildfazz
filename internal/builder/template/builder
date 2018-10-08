@@ -1,0 +1,34 @@
+#!/usr/bin/env docker.sh
+
+name=@project-name$
+image=$name
+opts="
+  -v '$name-data:/home/user'
+"
+
+command_rmvol() {
+  docker volume rm "$name-data" > /dev/null
+}
+
+pre_pull() {
+  panic "Image $image can't be pulled, please build"
+}
+
+command_build() (
+  pull_opt=--pull
+  [ "${NO_PULL:-}" = y ] && pull_opt=
+
+  cache_opt=
+  [ "${NO_CACHE:-}" = y ] && cache_opt=--no-cache
+
+  cd "$dir/dockerfiles"
+  tar -c builder | docker build $pull_opt $cache_opt \
+    -t "$image" \
+    -f builder -
+)
+
+pre_start() {
+  if [ "$1" = run ] && ! exists image "$image"; then
+    command_build || panic "Failed to build builder image"
+  fi
+}

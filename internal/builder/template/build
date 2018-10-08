@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -eu
+
+cd "$(dirname "$0")"
+
+docker_tag=${DOCKER_TAG:-}
+if [ -z "$docker_tag" ]; then
+  echo "DOCKER_TAG is not set" >&2
+  exit 1
+fi
+
+./builder start
+./sync-src
+./builder exec sh -ceu 'cd ~ && ./build "$@"' - "$@"
+./sync-output
+./builder rm -f
+
+pull_opt=--pull
+[ "${NO_PULL:-}" = y ] && pull_opt=
+
+cache_opt=
+[ "${NO_CACHE:-}" = y ] && cache_opt=--no-cache
+
+tar -c \
+  output \
+  scripts/start-app \
+  dockerfiles/project \
+| docker build $pull_opt $cache_opt \
+  -t "$docker_tag" \
+  -f dockerfiles/project -

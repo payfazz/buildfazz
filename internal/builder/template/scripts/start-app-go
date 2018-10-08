@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -eu
+
+if [ "$(id -u)" = "0" ]; then
+    chown app:app -R /logs
+    export HOME=$(getent passwd app | cut -d: -f6)
+    export USER=app
+    export LOGNAME=app
+    exec 1>>/logs/out.txt
+    exec 2>>/logs/err.txt
+    exec docker_pid1 swuser $(id -u app),$(id -g app) "$0"
+    exit 1
+else
+    cd /app
+    exec ./@project-name$
+fi

@@ -1,0 +1,20 @@
+FROM golang:alpine
+
+RUN set -eux \
+ && wget -qO /usr/local/bin/docker_pid1 https://github.com/win-t/docker_pid1/releases/download/v3.0.0/docker_pid1 \
+ && chmod 755 /usr/local/bin/docker_pid1
+
+RUN set -eux \
+ && apk -U add gcc git musl-dev rsync
+
+RUN set -eux \
+ && adduser -D user \
+ && mkdir -p ~user/go \
+ && chown -R user:user ~user/go
+
+USER user
+ENV GOPATH=/home/user/go
+ENV PATH=/home/user/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+WORKDIR /home/user/go
+
+ENTRYPOINT ["docker_pid1"]

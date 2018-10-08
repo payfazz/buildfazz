@@ -1,0 +1,23 @@
+FROM alpine:latest
+
+RUN set -eux \
+ && wget -qO /usr/local/bin/docker_pid1 https://github.com/win-t/docker_pid1/releases/download/v3.0.0/docker_pid1 \
+ && chmod 755 /usr/local/bin/docker_pid1 \
+ && wget -qO /usr/local/bin/swuser https://github.com/win-t/switch-user/releases/download/v1.0.0/swuser \
+ && chmod 755 /usr/local/bin/swuser
+
+RUN set -eux \
+ && mkdir /logs \
+ && ln -sf /dev/stdout /logs/out.txt \
+ && ln -sf /dev/stderr /logs/err.txt
+
+RUN set -eux \
+ && apk add -U ca-certificates
+
+RUN set -eux \
+ && adduser -D app
+
+ADD output /app
+ADD scripts/start-app /
+
+ENTRYPOINT ["/start-app"]

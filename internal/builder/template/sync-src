@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#!/bin/sh
+
+set -eu
+
+cd "$(dirname "$0")"
+
+alias docker_sync="rsync -e 'docker exec -i' --blocking-io"
+
+./builder exec sh -ceu 'cd ~/go && mkdir -p "src/github.com/payfazz/@project-name$"'
+
+docker_sync \
+  -a --delete \
+  scripts/install-deps \
+  scripts/build \
+  "$(./builder name):/home/user"
+
+docker_sync \
+  --exclude="/.git/" \
+  --exclude="/docker/" \
+  -a --delete \
+  ../../ \
+  "$(./builder name):/home/user/go/src/github.com/payfazz/@project-name$"
+

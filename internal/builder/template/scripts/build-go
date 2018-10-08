@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -eu
+cd "$(dirname "$0")"
+
+lock_dir="$PWD/$(basename "$0").lock"
+if ! mkdir "$lock_dir" >/dev/null 2>&1; then
+  echo "cannot aquire lock" >&2
+  exit 1
+fi
+trap "rmdir \"$lock_dir\"" EXIT
+
+get_flag=-u
+for arg; do
+  case $arg in
+  --no-update) get_flag= ;;
+  esac
+done
+
+(
+  set -x
+  cd ~
+  outdir=$PWD/output
+  mkdir -p "$outdir"
+  install-deps-go "$@"
+  cd "$(go env GOPATH)/src/github.com/payfazz/@project-name$"
+  GOBIN=$outdir go install ./...
+)

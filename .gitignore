@@ -1,0 +1,33 @@
+### Docker ###
+/bin
+/.go
+/.push-*
+/.container-*
+/.dockerfile-*
+
+### macOS ###
+*.DS_Store
+
+### Vim ###
+# swap
+.sw[a-p]
+.*.sw[a-p]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
+### Idea ###
+.idea/
+
+### VSCode ###
+.vscode
+vslaunch.json
+.env.local
+
+### database file
+.postgres
+.redis
