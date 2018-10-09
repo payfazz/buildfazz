@@ -39,7 +39,7 @@ RUN dep ensure --vendor-only
 
 func (g *Generator) generateDockerFile() {
 	var replacer = strings.NewReplacer("$base", g.Data.Base,
-		"$path", g.getWorkingPath(), "$add-on", g.getAddOn())
+		"$main", g.Data.Main, "$path", g.getWorkingPath(), "$add-on", g.getAddOn())
 	g.dockerfilePath = fmt.Sprintf("%s%s", g.Data.Pwd, "Dockerfile")
 	if _, err := os.Stat(g.dockerfilePath); !os.IsNotExist(err) {
 		os.Remove(g.dockerfilePath)

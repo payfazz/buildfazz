@@ -8,10 +8,11 @@ WORKDIR $GOPATH/$path
 
 $add-on
 COPY . ./
-RUN go build ./...
+RUN go build -o /app $main/*.go
 RUN rm -rf $GOPATH/bin/dep
 
 FROM scratch
+COPY --from=builder /app /app
 ENTRYPOINT ["./app"]
 `
 
