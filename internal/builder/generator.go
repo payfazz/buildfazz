@@ -1,7 +1,10 @@
 package builder
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/payfazz/buildfazz/internal/base"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -23,7 +26,7 @@ func (g *Generator) getWorkingPath() string {
 	return result
 }
 
-func (g *Generator) getAddOn() string{
+func (g *Generator) getAddOn() string {
 	if strings.Index(g.Data.Base, "golang") != -1 {
 		return `ADD https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 $GOPATH/bin/dep
 RUN chmod +x $GOPATH/bin/dep
@@ -36,8 +39,8 @@ RUN dep ensure --vendor-only
 
 func (g *Generator) generateDockerFile() {
 	var replacer = strings.NewReplacer("$base", g.Data.Base,
-		"$working_directory", g.Data.WorkingDirectory, "$path", g.getWorkingPath(), "$add-on", g.getAddOn())
-	g.dockerfilePath = "./Dockerfile"
+		"$main", g.Data.Main, "$path", g.getWorkingPath(), "$add-on", g.getAddOn())
+	g.dockerfilePath = fmt.Sprintf("%s%s", g.Data.Pwd, "Dockerfile")
 	if _, err := os.Stat(g.dockerfilePath); !os.IsNotExist(err) {
 		os.Remove(g.dockerfilePath)
 	}
@@ -55,8 +58,7 @@ func (g *Generator) generateDockerFile() {
 
 func (g *Generator) generateSh() {
 	var replacer = strings.NewReplacer("$projectName", g.projectName, "$projectTag", g.projectTag)
-
-	g.shPath = "./docker.sh"
+	g.shPath = fmt.Sprintf("%s%s", g.Data.Pwd, "docker.sh")
 	if _, err := os.Stat(g.dockerfilePath); !os.IsNotExist(err) {
 		os.Remove(g.shPath)
 	}
@@ -74,11 +76,27 @@ func (g *Generator) generateSh() {
 }
 
 func (g *Generator) execSh() {
+	var stdoutBuf bytes.Buffer
+	var errStdout error
 	cmd := exec.Command("/bin/sh", g.shPath)
-	_, err := cmd.CombinedOutput()
+	stdoutIn, _ := cmd.StdoutPipe()
+	stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
+	err := cmd.Start()
 	if err != nil {
-		log.Fatalf("Error while running SH, err : %s", err)
+		log.Fatalf("cmd.Start() failed with '%s'\n", err)
 	}
+	go func() {
+		_, errStdout = io.Copy(stdout, stdoutIn)
+	}()
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	if errStdout != nil {
+		log.Fatal("failed to capture stdout or stderr\n")
+	}
+	outStr := string(stdoutBuf.Bytes())
+	fmt.Printf("\nout:\n%s\n", outStr)
 }
 
 func (g *Generator) clearFiles() {
@@ -89,10 +107,10 @@ func (g *Generator) clearFiles() {
 func (g *Generator) Start() {
 	g.generateDockerFile()
 	g.generateSh()
-	//g.execSh()
-	//defer func() {
-	//	g.clearFiles()
-	//}()
+	g.execSh()
+	defer func() {
+		g.clearFiles()
+	}()
 }
 
 // NewGenerator new generator objects

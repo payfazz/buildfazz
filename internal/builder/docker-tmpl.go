@@ -8,7 +8,7 @@ WORKDIR $GOPATH/$path
 
 $add-on
 COPY . ./
-RUN go build -o /app $working_directory
+RUN go build -o /app $main
 RUN rm -rf $GOPATH/bin/dep
 
 FROM scratch

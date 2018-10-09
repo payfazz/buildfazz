@@ -87,7 +87,12 @@ func argsParser(args []string) map[string]string {
 func main() {
 	var pwd string
 	mapper := argsParser(os.Args)
+	if len(mapper) < 1 {
+		fmt.Println(getHelp())
+		os.Exit(0)
+	}
 	pwd, _ = os.Getwd()
+	pwd = fmt.Sprintf("%s/", pwd)
 	if mapper["path"] != "" {
 		pwd = mapper["path"]
 	}

@@ -23,7 +23,7 @@ func NewReaderConfig(pwd string) *Reader {
 	}
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("can't read 'buildfazz-config.yml', please create and fill 'buildfazz-config.yml'")
+		log.Fatalf("can't read 'buildfazz.yml', please create and fill 'buildfazz.yml'")
 	}
 	err = yaml.Unmarshal(yamlFile, &r.Config)
 	if err != nil {
