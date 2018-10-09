@@ -107,9 +107,9 @@ func (g *Generator) clearFiles() {
 func (g *Generator) Start() {
 	g.generateDockerFile()
 	g.generateSh()
-	//g.execSh()
+	g.execSh()
 	defer func() {
-		//g.clearFiles()
+		g.clearFiles()
 	}()
 }
 
