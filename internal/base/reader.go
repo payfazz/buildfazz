@@ -1,4 +1,4 @@
-package circleci
+package base
 
 import (
 	"gopkg.in/yaml.v2"
@@ -6,7 +6,6 @@ import (
 	"log"
 	"path"
 	"path/filepath"
-	"runtime"
 )
 
 // Reader ...
@@ -14,23 +13,22 @@ type Reader struct {
 	Config Data
 }
 
-// NewCircleCIReader ...
-func NewCircleCIReader(pwd string) *Reader {
+// NewReaderConfig ...
+func NewReaderConfig(pwd string) *Reader {
 	r := Reader{}
-	_, filename, _, _ := runtime.Caller(1)
-	fp := path.Join(path.Dir(filename), "../.circleci/config.yml")
+	fp := path.Join(pwd, "/buildfazz.yml")
 	filename, err := filepath.Abs(fp)
-	log.Println(filename)
 	if err != nil {
-		panic("file not found")
+		log.Fatalf("file not found")
 	}
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		log.Fatalf("can't read 'buildfazz-config.yml', please create and fill 'buildfazz-config.yml'")
 	}
 	err = yaml.Unmarshal(yamlFile, &r.Config)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed while parsing config, err : %s", err)
 	}
+	r.Config.Pwd = pwd
 	return &r
 }

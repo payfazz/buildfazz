@@ -1,0 +1,2 @@
+base: golang:alpine
+working_directory: cmd/main.go
