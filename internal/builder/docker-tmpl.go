@@ -12,7 +12,7 @@ RUN go build -o /app $main/*.go
 RUN rm -rf $GOPATH/bin/dep
 
 FROM scratch
-COPY --from=builder /app /app
+COPY --from=builder /app .
 ENTRYPOINT ["./app"]
 `
 
