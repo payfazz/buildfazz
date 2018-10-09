@@ -11,7 +11,7 @@ COPY . ./
 RUN go build -o /app $main/*.go
 RUN rm -rf $GOPATH/bin/dep
 
-FROM scratch
+FROM debian
 COPY --from=builder /app .
 ENTRYPOINT ["./app"]
 `

@@ -1,2 +1,2 @@
-base: golang:alpine
+base: golang:1.11
 main: cmd/buildfazz
