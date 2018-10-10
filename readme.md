@@ -15,7 +15,7 @@ See the **help** in:<br />
     buildfazz --help
     
     
-<br />
+
 ### Command
 
 **Command** list :
