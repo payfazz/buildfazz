@@ -1,15 +1,20 @@
 **BuildFazz**<br />
 <br />
-_BuildFazz_ is the docker image builder.<br />
+_BuildFazz_ is the docker image builder and pusher. Easy to use, help you create a docker image for your project without any skills required.<br />
 <br />
 How to install : <br />
-`go get github.com/payfazz/buildfazz/cmd/buildfazz`<br />
-<br />
+
+    go get github.com/payfazz/buildfazz/cmd/buildfazz
+
 How to use : <br />
-`buildfazz COMMAND [OPTIONS] {project-name}:"[project-tag]`<br />
+
+    buildfazz COMMAND [OPTIONS] {project-name}:"[project-tag]
 
 See the help in:<br />
-`buildfazz --help`<br /><br />
+    
+    buildfazz --help
+    
+
 
 Command exist :
 - build<br />
