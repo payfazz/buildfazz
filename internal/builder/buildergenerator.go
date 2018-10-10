@@ -104,6 +104,7 @@ func (g *Generator) clearFiles() {
 	os.Remove(g.shPath)
 }
 
+// Start start generator
 func (g *Generator) Start() {
 	g.generateDockerFile()
 	g.generateSh()

@@ -88,17 +88,21 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 
 func main() {
 	var pwd string
+	// get args from user
 	mapper := argsParser(os.Args)
 	if len(mapper) < 1 {
 		fmt.Printf("command not found!\n%s", help.NewBasicHelp().GenerateHelp())
 		os.Exit(0)
 	}
+	// get current path
 	pwd, _ = os.Getwd()
 	mapper["pwd"] = fmt.Sprintf("%s/", pwd)
 	if mapper["path"] != "" {
 		mapper["pwd"] = mapper["path"]
 	}
+	// map command
 	bld := executeCommand(mapper)
+	// if error occur
 	if bld == nil {
 		fmt.Printf("command not found!\n %s", help.NewBasicHelp().GenerateHelp())
 		os.Exit(1)
