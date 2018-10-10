@@ -14,7 +14,8 @@ See the **help** in:<br />
     
     buildfazz --help
     
-
+    
+<br />
 ### Command
 
 **Command** list :
@@ -26,7 +27,6 @@ Use `buildfazz COMMAND --help` to see detail use for each command.
 
 **Options** list for build:<br />
 - -p         Specify path for project path.
-<br />
 
 ##### Configuration buildfazz.yml
 You also need to specify the configuration file in **buildfazz.yml**. <br />
