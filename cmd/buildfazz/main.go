@@ -4,21 +4,10 @@ import (
 	"fmt"
 	"github.com/payfazz/buildfazz/internal/base"
 	"github.com/payfazz/buildfazz/internal/builder"
+	"github.com/payfazz/buildfazz/internal/help"
 	"os"
 	"strings"
 )
-
-func getHelp() string {
-	return `
-Usage: buildfazz COMMAND [OPTIONS] {docker-name}:[docker-tag]
-
-Commands:
-	build		Build docker image
-	Options:
-		-p		Set buildfazz working directory
-
-`
-}
 
 // check is array isset or not
 func isset(arr []string, index int) bool {
@@ -54,12 +43,12 @@ func argsParser(args []string) map[string]string {
 	mapper := make(map[string]string)
 	// insufficient command params
 	if len(args) < 2 {
-		fmt.Println("insufficient arguments to call buildfazz")
+		fmt.Printf("\ninsufficient arguments to call buildfazz!\n %s", help.NewBasicHelp().GenerateHelp())
 		os.Exit(1)
 	}
 	// show help
 	if args[1] == "--help" {
-		fmt.Println(getHelp())
+		fmt.Println(help.NewBasicHelp().GenerateHelp())
 		os.Exit(0)
 	}
 	// remove index 0
@@ -68,6 +57,11 @@ func argsParser(args []string) map[string]string {
 	for k, v := range args {
 		switch v {
 		case "build":
+			if args[k+1] == "--help" {
+				fmt.Println(help.NewBuildHelp().GenerateHelp())
+				os.Exit(0)
+			}
+			mapper["type"] = v
 			removeStringFromArray(&args, k)
 			getOption(args, &mapper)
 			project := args[0]
@@ -84,18 +78,30 @@ func argsParser(args []string) map[string]string {
 	return mapper
 }
 
+func executeCommand(mapper map[string]string) builder.GeneratorInterface {
+	switch mapper["type"] {
+	case "build":
+		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper["projectName"], mapper["projectPath"])
+	}
+	return nil
+}
+
 func main() {
 	var pwd string
 	mapper := argsParser(os.Args)
 	if len(mapper) < 1 {
-		fmt.Println(getHelp())
+		fmt.Printf("command not found!\n%s", help.NewBasicHelp().GenerateHelp())
 		os.Exit(0)
 	}
 	pwd, _ = os.Getwd()
-	pwd = fmt.Sprintf("%s/", pwd)
+	mapper["pwd"] = fmt.Sprintf("%s/", pwd)
 	if mapper["path"] != "" {
-		pwd = mapper["path"]
+		mapper["pwd"] = mapper["path"]
 	}
-	bld := builder.NewGenerator(base.NewReaderConfig(pwd).Config, mapper["projectName"], mapper["projectPath"])
+	bld := executeCommand(mapper)
+	if bld == nil {
+		fmt.Printf("command not found!\n %s", help.NewBasicHelp().GenerateHelp())
+		os.Exit(1)
+	}
 	bld.Start()
 }

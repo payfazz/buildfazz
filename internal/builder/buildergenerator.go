@@ -113,7 +113,7 @@ func (g *Generator) Start() {
 	}()
 }
 
-// NewGenerator new generator objects
-func NewGenerator(data base.Data, projectName string, projectTag string) *Generator {
+// NewBuilderGenerator new builder generator objects
+func NewBuilderGenerator(data base.Data, projectName string, projectTag string) GeneratorInterface {
 	return &Generator{Data: data, projectName: projectName, projectTag: projectTag}
 }
