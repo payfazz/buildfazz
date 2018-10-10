@@ -28,6 +28,10 @@ Use `buildfazz COMMAND --help` to see detail use for each command.
 **Option** list for build:<br />
 - -p         Specify path for project path.
 
-##### Configuration buildfazz.yml
+# buildfazz.yml
 You also need to specify the configuration file in **buildfazz.yml**. <br />
 See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfazz/blob/master/buildfazz.yml).
+
+**fields**
+- base (project's base [golang/node/etc])
+- main (source target, example: cmd/buildfazz _or_ cmd/{your-project})
