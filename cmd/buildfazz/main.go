@@ -5,6 +5,7 @@ import (
 	"github.com/payfazz/buildfazz/internal/base"
 	"github.com/payfazz/buildfazz/internal/builder"
 	"github.com/payfazz/buildfazz/internal/help"
+	"github.com/payfazz/buildfazz/internal/pusher"
 	"os"
 	"strings"
 )
@@ -24,10 +25,19 @@ func getOption(args []string, mapper *map[string]string) {
 				removeStringFromArray(&args, k+1)
 				removeStringFromArray(&args, k)
 			} else {
-				fmt.Println("your path format is wrong! please use: --path [path]")
+				fmt.Println("your path format is wrong! please use: -p [path]")
 				os.Exit(1)
 			}
 			break
+		case "-e":
+			if isset(args, k+1) && args[k+1] != "" {
+				(*mapper)["env"] = args[k+1]
+				removeStringFromArray(&args, k+1)
+				removeStringFromArray(&args, k)
+			} else {
+				fmt.Println("your path format is wrong! please use: -e [env]")
+				os.Exit(1)
+			}
 		}
 	}
 }
@@ -57,11 +67,12 @@ func argsParser(args []string) map[string]string {
 	for k, v := range args {
 		switch v {
 		case "build":
+			mapper["type"] = v
 			if args[k+1] == "--help" {
 				fmt.Println(help.NewBuildHelp().GenerateHelp())
 				os.Exit(0)
 			}
-			mapper["type"] = v
+
 			removeStringFromArray(&args, k)
 			getOption(args, &mapper)
 			project := args[0]
@@ -71,7 +82,23 @@ func argsParser(args []string) map[string]string {
 			if isset(temp, 1) && temp[1] != "" {
 				mapper["projectPath"] = strings.ToLower(temp[1])
 			}
+			break
+		case "push":
+			mapper["type"] = v
+			if args[k+1] == "--help" {
+				fmt.Println(help.NewBuildHelp().GenerateHelp())
+				os.Exit(0)
+			}
 
+			removeStringFromArray(&args, k)
+			getOption(args, &mapper)
+			project := args[0]
+			temp := strings.Split(project, ":")
+			mapper["projectName"] = strings.ToLower(temp[0])
+			mapper["projectPath"] = "latest"
+			if isset(temp, 1) && temp[1] != "" {
+				mapper["projectPath"] = strings.ToLower(temp[1])
+			}
 			break
 		}
 	}
@@ -82,6 +109,8 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 	switch mapper["type"] {
 	case "build":
 		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper["projectName"], mapper["projectPath"])
+	case "push":
+		return pusher.NewPusherGenerator( mapper["projectName"], mapper["projectPath"], mapper["env"])
 	}
 	return nil
 }
@@ -104,8 +133,9 @@ func main() {
 	bld := executeCommand(mapper)
 	// if error occur
 	if bld == nil {
-		fmt.Printf("command not found!\n %s", help.NewBasicHelp().GenerateHelp())
+		fmt.Printf("error occur!\n %s", help.NewBasicHelp().GenerateHelp())
 		os.Exit(1)
 	}
+	fmt.Println(mapper)
 	bld.Start()
 }
