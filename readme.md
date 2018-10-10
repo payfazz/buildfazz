@@ -16,12 +16,14 @@ See the **help** in:<br />
     
 
 ###Command
+
 **Command** list :
 - build<br />
 
 Use `buildfazz COMMAND --help` to see detail use for each command.
 
 ####Option
+
 **Options** list for build:<br />
 - -p         Specify path for project path.
 <br />
