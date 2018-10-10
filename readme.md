@@ -15,19 +15,19 @@ See the **help** in:<br />
     buildfazz --help
     
 
-###Command
+##Command
 
 **Command** list :
 - build<br />
 
 Use `buildfazz COMMAND --help` to see detail use for each command.
 
-####Option
+##Option
 
 **Options** list for build:<br />
 - -p         Specify path for project path.
 <br />
 
-####Configuration buildfazz.yml
+##Configuration buildfazz.yml
 You also need to specify the configuration file in **buildfazz.yml**. <br />
 See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfazz/blob/master/buildfazz.yml).
