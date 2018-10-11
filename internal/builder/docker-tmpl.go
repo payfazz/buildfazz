@@ -18,15 +18,10 @@ var shTmpl = `#!/bin/sh
 
 set -eux
 
-startLocation=$PWD
 cd "$(dirname "$0")"
 
-export GOPATH=""
-
 if [ -z "$GOPATH" ]; then
-    cd ../../../../
-	export GOPATH=$PWD
-	cd $startLocation
+	export GOPATH=~/go
 fi
 
 docker build -t $projectName:$projectTag .
