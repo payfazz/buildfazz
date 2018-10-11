@@ -2,7 +2,7 @@ package pusher
 
 var template = `#!/bin/sh
 
-set -eux
+set -eu
 
 docker tag $1 ${deployer}${server}/$1
 

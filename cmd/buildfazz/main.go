@@ -6,7 +6,6 @@ import (
 	"github.com/payfazz/buildfazz/internal/builder"
 	"github.com/payfazz/buildfazz/internal/help"
 	"github.com/payfazz/buildfazz/internal/pusher"
-	"log"
 	"os"
 	"strings"
 )
@@ -17,28 +16,28 @@ func isset(arr []string, index int) bool {
 }
 
 // option mapper helper
-func mapOptions(args *[]string, mapper *map[string]string, idx int, val string) bool {
+func mapOptions(args *[]string, mapper *map[string]string, val string) bool {
+	idx := 0
 	if isset(*args, idx+1) && (*args)[idx+1] != "" {
 		(*mapper)[val] = (*args)[idx+1]
-		removeStringFromArray(args, idx)
-		removeStringFromArray(args, idx)
+		removeStringFromArray(args, idx, 2)
 		return true
 	}
 	return false
 }
 
 // get command options
-func getBuildOption(args []string, mapper *map[string]string) {
-	for k, v := range args {
-		switch v {
+func getBuildOption(args *[]string, mapper *map[string]string) {
+	for stat := true; stat; stat = len(*args) > 1 {
+		switch (*args)[0] {
 		case "-p":
-			if !mapOptions(&args, mapper, k, "path") {
+			if !mapOptions(args, mapper, "path") {
 				fmt.Println("your path format is wrong! please use: -p [path]")
 				os.Exit(1)
 			}
 			break
 		case "-os":
-			if !mapOptions(&args, mapper, k, "os") {
+			if !mapOptions(args, mapper, "os") {
 				fmt.Println("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
 				os.Exit(1)
 			}
@@ -48,29 +47,28 @@ func getBuildOption(args []string, mapper *map[string]string) {
 }
 
 // get push options
-func getPushOption(args []string, mapper *map[string]string) {
-	log.Println("FULL ARGS: ", args)
-	for k, v := range args {
-		switch v {
+func getPushOption(args *[]string, mapper *map[string]string) {
+	for stat := true; stat; stat = len(*args) > 1 {
+		switch (*args)[0] {
 		case "-e":
-			if !mapOptions(&args, mapper, k, "env") {
+			if !mapOptions(args, mapper, "env") {
 				fmt.Println("your path format is wrong! please use: -e [mac]")
 				os.Exit(1)
 			}
 			break
 		case "-t":
-			if !mapOptions(&args, mapper, k, "target") {
+			if !mapOptions(args, mapper, "target") {
 				fmt.Println("your path format is wrong! please use: -t [server target]")
 				os.Exit(1)
 			}
 			break
 		case "-ssh":
-			if !mapOptions(&args, mapper, k, "ssh") {
+			if !mapOptions(args, mapper, "ssh") {
 				fmt.Println("your path format is wrong! please use: -ssh [ssh target]")
 				os.Exit(1)
 			}
 		case "-p":
-			if !mapOptions(&args, mapper, k, "port") {
+			if !mapOptions(args, mapper, "port") {
 				fmt.Println("your path format is wrong! please use: -p [port]")
 				os.Exit(1)
 			}
@@ -80,20 +78,24 @@ func getPushOption(args []string, mapper *map[string]string) {
 }
 
 // splice array
-func removeStringFromArray(args *[]string, i int) {
+func removeStringFromArray(args *[]string, i int, length int) {
 	(*args)[i] = ""
-	*args = append((*args)[:i], (*args)[i+1:]...)
+	*args = append((*args)[:i], (*args)[i+length:]...)
 }
 
 // args mapper helper
 func mapArgs(args *[]string, mapper *map[string]string, idx int, key string, val string) {
 	(*mapper)[key] = val
-
-	removeStringFromArray(args, idx)
+	removeStringFromArray(args, idx, 1)
 }
 
 func getProjectProp(args *[]string, mapper *map[string]string) {
 	project := (*args)[0]
+	fmt.Println(project)
+	if project == "" {
+		fmt.Println("what is your docker image? put: {docker-name}:[docker-tag]")
+		os.Exit(1)
+	}
 	temp := strings.Split(project, ":")
 	(*mapper)["projectName"] = strings.ToLower(temp[0])
 	(*mapper)["projectTag"] = "latest"
@@ -116,7 +118,7 @@ func argsParser(args []string) map[string]string {
 		os.Exit(0)
 	}
 	// remove index 0
-	removeStringFromArray(&args, 0)
+	removeStringFromArray(&args, 0, 1)
 	// search docker command
 	for k, v := range args {
 		switch v {
@@ -126,7 +128,7 @@ func argsParser(args []string) map[string]string {
 				os.Exit(0)
 			}
 			mapArgs(&args, &mapper, k, "type", v)
-			getBuildOption(args, &mapper)
+			getBuildOption(&args, &mapper)
 			break
 		case "push":
 			if isset(args, k+1) && args[k+1] == "--help" {
@@ -134,7 +136,7 @@ func argsParser(args []string) map[string]string {
 				os.Exit(0)
 			}
 			mapArgs(&args, &mapper, k, "type", v)
-			getPushOption(args, &mapper)
+			getPushOption(&args, &mapper)
 			break
 		}
 	}
