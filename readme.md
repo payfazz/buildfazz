@@ -4,24 +4,21 @@ _BuildFazz_ is the docker image builder and pusher. Easy to use, help you create
 <br />
 
 ##### Installation
-How to install : <br />
 
     go get github.com/payfazz/buildfazz/cmd/buildfazz
 
 ##### Usage
-How to use : <br />
 
     buildfazz COMMAND [OPTIONS] {project-name}:"[project-tag]
 
 ##### Help
-See the **help** in:<br />
     
     buildfazz --help
     
    
    
     
-#### buildfazz.yml
+### buildfazz.yml
 You also need to specify the configuration file in **buildfazz.yml**. <br />
 See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfazz/blob/master/buildfazz.yml).
 
