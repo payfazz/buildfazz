@@ -119,16 +119,20 @@ func argsParser(args []string) map[string]string {
 	removeStringFromArray(&args, 0)
 	// search docker command
 	for k, v := range args {
-		if isset(args, k+1) && args[k+1] == "--help" {
-			fmt.Println(help.NewBuildHelp().GenerateHelp())
-			os.Exit(0)
-		}
 		switch v {
 		case "build":
+			if isset(args, k+1) && args[k+1] == "--help" {
+				fmt.Println(help.NewBuildHelp().GenerateHelp())
+				os.Exit(0)
+			}
 			mapArgs(&args, &mapper, k, "type", v)
 			getBuildOption(args, &mapper)
 			break
 		case "push":
+			if isset(args, k+1) && args[k+1] == "--help" {
+				fmt.Println(help.NewPushHelp().GenerateHelp())
+				os.Exit(0)
+			}
 			mapArgs(&args, &mapper, k, "type", v)
 			getPushOption(args, &mapper)
 			break
