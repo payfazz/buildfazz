@@ -24,10 +24,9 @@ type Generator struct {
 func (g *Generator) getWorkingPath() string {
 	var result string
 	if strings.Index(g.Data.Base, "golang") != -1 {
-		//var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
-		//result = replacer.Replace(g.Data.Pwd)
-		//result = fmt.Sprintf("%s%s", "WORKDIR $GOPATH", result)
-		result = fmt.Sprintf("%s%s", "WORKDIR ", g.Data.Pwd)
+		var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
+		result = replacer.Replace(g.Data.Pwd)
+		result = fmt.Sprintf("%s/%s", "WORKDIR $GOPATH", result)
 	}
 	return result
 }
@@ -122,8 +121,8 @@ func (g *Generator) clearFiles() {
 
 // Start start generator
 func (g *Generator) Start() {
-	g.generateDockerFile()
 	g.generateSh()
+	g.generateDockerFile()
 	g.execSh()
 	defer func() {
 		g.clearFiles()

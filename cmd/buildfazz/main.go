@@ -6,6 +6,7 @@ import (
 	"github.com/payfazz/buildfazz/internal/builder"
 	"github.com/payfazz/buildfazz/internal/help"
 	"github.com/payfazz/buildfazz/internal/pusher"
+	"log"
 	"os"
 	"strings"
 )
@@ -32,14 +33,12 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 		switch (*args)[0] {
 		case "-p":
 			if !mapOptions(args, mapper, "path") {
-				fmt.Println("your path format is wrong! please use: -p [path]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -p [path]")
 			}
 			break
 		case "-os":
 			if !mapOptions(args, mapper, "os") {
-				fmt.Println("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
 			}
 			break
 		}
@@ -52,25 +51,21 @@ func getPushOption(args *[]string, mapper *map[string]string) {
 		switch (*args)[0] {
 		case "-e":
 			if !mapOptions(args, mapper, "env") {
-				fmt.Println("your path format is wrong! please use: -e [mac]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -e [mac]")
 			}
 			break
 		case "-t":
 			if !mapOptions(args, mapper, "target") {
-				fmt.Println("your path format is wrong! please use: -t [server target]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -t [server target]")
 			}
 			break
 		case "-ssh":
 			if !mapOptions(args, mapper, "ssh") {
-				fmt.Println("your path format is wrong! please use: -ssh [ssh target]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -ssh [ssh target]")
 			}
 		case "-p":
 			if !mapOptions(args, mapper, "port") {
-				fmt.Println("your path format is wrong! please use: -p [port]")
-				os.Exit(1)
+				log.Fatalf("your path format is wrong! please use: -p [port]")
 			}
 			break
 		}
@@ -91,10 +86,8 @@ func mapArgs(args *[]string, mapper *map[string]string, idx int, key string, val
 
 func getProjectProp(args *[]string, mapper *map[string]string) {
 	project := (*args)[0]
-	fmt.Println(project)
 	if project == "" {
-		fmt.Println("what is your docker image? put: {docker-name}:[docker-tag]")
-		os.Exit(1)
+		log.Fatalf("what is your docker image? put: {docker-name}:[docker-tag]")
 	}
 	temp := strings.Split(project, ":")
 	(*mapper)["projectName"] = strings.ToLower(temp[0])
@@ -109,8 +102,7 @@ func argsParser(args []string) map[string]string {
 	mapper := make(map[string]string)
 	// insufficient command params
 	if len(args) < 2 {
-		fmt.Printf("\ninsufficient arguments to call buildfazz!\n %s", help.NewBasicHelp().GenerateHelp())
-		os.Exit(1)
+		log.Fatalf("\ninsufficient arguments to call buildfazz!\n %s", help.NewBasicHelp().GenerateHelp())
 	}
 	// show help
 	if args[1] == "--help" {
@@ -160,8 +152,7 @@ func main() {
 	// get args from user
 	mapper := argsParser(os.Args)
 	if len(mapper) < 1 {
-		fmt.Printf("command not found!\n%s", help.NewBasicHelp().GenerateHelp())
-		os.Exit(0)
+		log.Fatalf("command not found!\n%s", help.NewBasicHelp().GenerateHelp())
 	}
 	// get current path
 	pwd, _ = os.Getwd()
@@ -173,9 +164,7 @@ func main() {
 	bld := executeCommand(mapper)
 	// if error occur
 	if bld == nil {
-		fmt.Printf("error occur!\n %s", help.NewBasicHelp().GenerateHelp())
-		os.Exit(1)
+		log.Fatalf("error occur!\n %s", help.NewBasicHelp().GenerateHelp())
 	}
-	fmt.Println(mapper)
 	bld.Start()
 }
