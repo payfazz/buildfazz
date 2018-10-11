@@ -2,7 +2,7 @@ package help
 
 type Push struct {}
 
-func (b *Build) GeneratePush() string {
+func (b *Push) GenerateHelp() string {
 	return `
 Usage: 		buildfazz push -ssh {user@server} [OPTIONS] {docker-name}:[docker-tag]
 Example: 	buildfazz push -ssh root@127.0.0.1 myImage:latest
@@ -15,5 +15,5 @@ Options:
 }
 
 func NewPushHelp() HelperInterface{
-	return &Build{}
+	return &Push{}
 }
