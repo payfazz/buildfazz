@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Generator ...
 type Generator struct {
 	projectName string
 	projectTag  string
@@ -54,6 +55,7 @@ func (g *Generator) execSh() {
 	}
 }
 
+// Start ...
 func (g *Generator) Start() {
 	g.generateSh()
 	fmt.Printf("\n\nWARNING, DO NOT CLOSE YOUR APPLICATION!\nYOUR APPS WILL STUCK IF YOU DO THAT!\nDOCKER PUSH ON PROGRESS\n\n")
@@ -66,6 +68,7 @@ func (g *Generator) Start() {
 	}()
 }
 
+// NewPusherGenerator ...
 func NewPusherGenerator(mapper map[string]string) builder.GeneratorInterface {
 	if mapper["port"] == "" {
 		mapper["port"] = "5000"

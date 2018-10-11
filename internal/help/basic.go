@@ -1,7 +1,9 @@
 package help
 
+// Basic ...
 type Basic struct {}
 
+// GenerateHelp ...
 func (b *Basic) GenerateHelp() string {
 	return `
 Usage: buildfazz COMMAND [OPTIONS] {docker-name}:[docker-tag]
@@ -12,6 +14,7 @@ Commands:
 `
 }
 
+// NewBasicHelp ...
 func NewBasicHelp() HelperInterface{
 	return &Basic{}
 }

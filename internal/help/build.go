@@ -1,7 +1,9 @@
 package help
 
+// Build ...
 type Build struct {}
 
+// GenerateHelp ...
 func (b *Build) GenerateHelp() string {
 	return `
 Usage: buildfazz build [OPTIONS] {docker-name}:[docker-tag]
@@ -12,6 +14,7 @@ Options:
 `
 }
 
+// NewBuildHelp ...
 func NewBuildHelp() HelperInterface{
 	return &Build{}
 }

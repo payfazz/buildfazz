@@ -1,7 +1,9 @@
 package help
 
+// Push ...
 type Push struct {}
 
+// GenerateHelp ...
 func (b *Push) GenerateHelp() string {
 	return `
 Usage: 		buildfazz push -ssh {user@server} [OPTIONS] {docker-name}:[docker-tag]
@@ -14,6 +16,7 @@ Options:
 `
 }
 
+// NewPushHelp ...
 func NewPushHelp() HelperInterface{
 	return &Push{}
 }
