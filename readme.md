@@ -26,25 +26,25 @@ See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfaz
 
 ### Command & Option
 
-**Command** list :
+Command list :
 - build -> Build docker image
 - push -> Push docker image to registry server
     
-#### Build
+### Build
     
     buildfazz build name:tag
     
-**Build Option** list for build:<br />
+Build option list for build:<br />
 - -p        Set buildfazz working directory, default: current directory
 - -os	    Set buildfazz default OS (options: debian/ubuntu/scratch/etc...), default: debian
 
-#### Push
+### Push
 
     buildfazz push name:tag -ssh user@127.0.0.1
 
 Use `buildfazz COMMAND --help` to see detail use for each command.
 
-**Push Option** list for push:<br />
+Push option list for push:<br />
 - -e	    Set environment for your workstation (put 'mac' for mac user, don't forget to see docker mac doc), default: none
 - -t	    Target server (example: -t localhost), default: localhost
 - -p	    Target port (example: -p 9080), default: 5000
