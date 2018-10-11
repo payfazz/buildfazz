@@ -24,9 +24,12 @@ type Generator struct {
 func (g *Generator) getWorkingPath() string {
 	var result string
 	if strings.Index(g.Data.Base, "golang") != -1 {
+		log.Println("FFFF : ", os.Getenv("GOPATH"))
+		log.Println("CCCC : ", g.Data.Pwd)
 		var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
 		result = replacer.Replace(g.Data.Pwd)
 		result = fmt.Sprintf("%s%s", "WORKDIR $GOPATH", result)
+		log.Println("GGGG : ", result)
 	}
 	return result
 }
