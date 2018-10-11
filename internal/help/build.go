@@ -7,7 +7,8 @@ func (b *Build) GenerateHelp() string {
 Usage: buildfazz build [OPTIONS] {docker-name}:[docker-tag]
 
 Options:	
-	-p		Set buildfazz working directory
+	-p		Set buildfazz working directory, default: current directory
+	-os		Set buildfazz default OS (options: debian/ubuntu/scratch/etc...), default: debian
 `
 }
 

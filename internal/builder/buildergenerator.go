@@ -18,11 +18,16 @@ type Generator struct {
 	projectTag     string
 	dockerfilePath string
 	shPath         string
+	os             string
 }
 
 func (g *Generator) getWorkingPath() string {
-	var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
-	result := replacer.Replace(g.Data.Pwd)
+	var result string
+	if strings.Index(g.Data.Base, "golang") != -1 {
+		var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
+		result = replacer.Replace(g.Data.Pwd)
+		result = fmt.Sprintf("%s%s", "WORKDIR $GOPATH/", result)
+	}
 	return result
 }
 
@@ -37,9 +42,19 @@ RUN dep ensure --vendor-only
 	return ""
 }
 
+func (g *Generator) getRunningScript(main string) string {
+	if strings.Index(g.Data.Base, "golang") != -1 {
+		return fmt.Sprintf(`
+COPY . ./
+RUN go build -o /app %s/*.go
+RUN rm -rf $GOPATH/bin/dep`, main)
+	}
+	return ""
+}
+
 func (g *Generator) generateDockerFile() {
 	var replacer = strings.NewReplacer("$base", g.Data.Base,
-		"$main", g.Data.Main, "$path", g.getWorkingPath(), "$add-on", g.getAddOn())
+		"$path", g.getWorkingPath(), "$add-on", g.getAddOn(), "$run", g.getRunningScript(g.Data.Main), "$os", g.os)
 	g.dockerfilePath = fmt.Sprintf("%s%s", g.Data.Pwd, "Dockerfile")
 	if _, err := os.Stat(g.dockerfilePath); !os.IsNotExist(err) {
 		os.Remove(g.dockerfilePath)
@@ -111,10 +126,15 @@ func (g *Generator) Start() {
 	g.execSh()
 	defer func() {
 		g.clearFiles()
+		fmt.Println("build success")
+		os.Exit(0)
 	}()
 }
 
 // NewBuilderGenerator new builder generator objects
-func NewBuilderGenerator(data base.Data, projectName string, projectTag string) GeneratorInterface {
-	return &Generator{Data: data, projectName: projectName, projectTag: projectTag}
+func NewBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInterface {
+	if mapper["os"] == "" {
+		mapper["os"] = "debian"
+	}
+	return &Generator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], os: mapper["os"]}
 }

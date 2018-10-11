@@ -6,6 +6,7 @@ import (
 	"github.com/payfazz/buildfazz/internal/builder"
 	"github.com/payfazz/buildfazz/internal/help"
 	"github.com/payfazz/buildfazz/internal/pusher"
+	"log"
 	"os"
 	"strings"
 )
@@ -15,29 +16,65 @@ func isset(arr []string, index int) bool {
 	return (len(arr) > index)
 }
 
+// option mapper helper
+func mapOptions(args *[]string, mapper *map[string]string, idx int, val string) bool {
+	if isset(*args, idx+1) && (*args)[idx+1] != "" {
+		(*mapper)[val] = (*args)[idx+1]
+		removeStringFromArray(args, idx)
+		removeStringFromArray(args, idx)
+		return true
+	}
+	return false
+}
+
 // get command options
-func getOption(args []string, mapper *map[string]string) {
+func getBuildOption(args []string, mapper *map[string]string) {
 	for k, v := range args {
 		switch v {
 		case "-p":
-			if isset(args, k+1) && args[k+1] != "" {
-				(*mapper)["path"] = args[k+1]
-				removeStringFromArray(&args, k+1)
-				removeStringFromArray(&args, k)
-			} else {
+			if !mapOptions(&args, mapper, k, "path") {
 				fmt.Println("your path format is wrong! please use: -p [path]")
 				os.Exit(1)
 			}
 			break
-		case "-e":
-			if isset(args, k+1) && args[k+1] != "" {
-				(*mapper)["env"] = args[k+1]
-				removeStringFromArray(&args, k+1)
-				removeStringFromArray(&args, k)
-			} else {
-				fmt.Println("your path format is wrong! please use: -e [env]")
+		case "-os":
+			if !mapOptions(&args, mapper, k, "os") {
+				fmt.Println("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
 				os.Exit(1)
 			}
+			break
+		}
+	}
+}
+
+// get push options
+func getPushOption(args []string, mapper *map[string]string) {
+	log.Println("FULL ARGS: ", args)
+	for k, v := range args {
+		switch v {
+		case "-e":
+			if !mapOptions(&args, mapper, k, "env") {
+				fmt.Println("your path format is wrong! please use: -e [mac]")
+				os.Exit(1)
+			}
+			break
+		case "-t":
+			if !mapOptions(&args, mapper, k, "target") {
+				fmt.Println("your path format is wrong! please use: -t [server target]")
+				os.Exit(1)
+			}
+			break
+		case "-ssh":
+			if !mapOptions(&args, mapper, k, "ssh") {
+				fmt.Println("your path format is wrong! please use: -ssh [ssh target]")
+				os.Exit(1)
+			}
+		case "-p":
+			if !mapOptions(&args, mapper, k, "port") {
+				fmt.Println("your path format is wrong! please use: -p [port]")
+				os.Exit(1)
+			}
+			break
 		}
 	}
 }
@@ -46,6 +83,23 @@ func getOption(args []string, mapper *map[string]string) {
 func removeStringFromArray(args *[]string, i int) {
 	(*args)[i] = ""
 	*args = append((*args)[:i], (*args)[i+1:]...)
+}
+
+// args mapper helper
+func mapArgs(args *[]string, mapper *map[string]string, idx int, key string, val string) {
+	(*mapper)[key] = val
+
+	removeStringFromArray(args, idx)
+}
+
+func getProjectProp(args *[]string, mapper *map[string]string) {
+	project := (*args)[0]
+	temp := strings.Split(project, ":")
+	(*mapper)["projectName"] = strings.ToLower(temp[0])
+	(*mapper)["projectTag"] = "latest"
+	if isset(temp, 1) && temp[1] != "" {
+		(*mapper)["projectTag"] = strings.ToLower(temp[1])
+	}
 }
 
 // parse arguments from user
@@ -65,52 +119,32 @@ func argsParser(args []string) map[string]string {
 	removeStringFromArray(&args, 0)
 	// search docker command
 	for k, v := range args {
+		if isset(args, k+1) && args[k+1] == "--help" {
+			fmt.Println(help.NewBuildHelp().GenerateHelp())
+			os.Exit(0)
+		}
 		switch v {
 		case "build":
-			mapper["type"] = v
-			if args[k+1] == "--help" {
-				fmt.Println(help.NewBuildHelp().GenerateHelp())
-				os.Exit(0)
-			}
-
-			removeStringFromArray(&args, k)
-			getOption(args, &mapper)
-			project := args[0]
-			temp := strings.Split(project, ":")
-			mapper["projectName"] = strings.ToLower(temp[0])
-			mapper["projectPath"] = "latest"
-			if isset(temp, 1) && temp[1] != "" {
-				mapper["projectPath"] = strings.ToLower(temp[1])
-			}
+			mapArgs(&args, &mapper, k, "type", v)
+			getBuildOption(args, &mapper)
 			break
 		case "push":
-			mapper["type"] = v
-			if args[k+1] == "--help" {
-				fmt.Println(help.NewBuildHelp().GenerateHelp())
-				os.Exit(0)
-			}
-
-			removeStringFromArray(&args, k)
-			getOption(args, &mapper)
-			project := args[0]
-			temp := strings.Split(project, ":")
-			mapper["projectName"] = strings.ToLower(temp[0])
-			mapper["projectPath"] = "latest"
-			if isset(temp, 1) && temp[1] != "" {
-				mapper["projectPath"] = strings.ToLower(temp[1])
-			}
+			mapArgs(&args, &mapper, k, "type", v)
+			getPushOption(args, &mapper)
 			break
 		}
 	}
+	getProjectProp(&args, &mapper)
 	return mapper
 }
 
+// execute command
 func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 	switch mapper["type"] {
 	case "build":
-		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper["projectName"], mapper["projectPath"])
+		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper)
 	case "push":
-		return pusher.NewPusherGenerator( mapper["projectName"], mapper["projectPath"], mapper["env"])
+		return pusher.NewPusherGenerator(mapper)
 	}
 	return nil
 }

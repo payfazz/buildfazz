@@ -4,19 +4,21 @@ var tmpl = `FROM $base AS builder
 
 ADD . .
 
-WORKDIR $GOPATH/$path
+$path
 
 $add-on
-COPY . ./
-RUN go build -o /app $main/*.go
-RUN rm -rf $GOPATH/bin/dep
+$run
 
-FROM debian
+FROM $os
 COPY --from=builder /app .
 ENTRYPOINT ["./app"]
 `
 
 var shTmpl = `#!/bin/sh
+
+set -eu
+
+cd "$(dirname "$0")"
 
 docker build -t $projectName:$projectTag .
 
