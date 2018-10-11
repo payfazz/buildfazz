@@ -2,7 +2,7 @@ FROM golang:1.11 AS builder
 
 ADD . .
 
-WORKDIR $GOPATH/src/github.com/payfazz/buildfazz/
+WORKDIR /go/github.com/payfazz/buildfazz
 
 ADD https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 $GOPATH/bin/dep
 RUN chmod +x $GOPATH/bin/dep

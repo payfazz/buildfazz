@@ -59,9 +59,9 @@ func getPushOption(args *[]string, mapper *map[string]string) {
 				log.Fatalf("your path format is wrong! please use: -t [server target]")
 			}
 			break
-		case "-ssh":
+		case "--ssh":
 			if !mapOptions(args, mapper, "ssh") {
-				log.Fatalf("your path format is wrong! please use: -ssh [ssh target]")
+				log.Fatalf("your path format is wrong! please use: --ssh [ssh target]")
 			}
 		case "-p":
 			if !mapOptions(args, mapper, "port") {

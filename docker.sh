@@ -8,7 +8,7 @@ if [ -z "$GOPATH" ]; then
 	export GOPATH=~/go
 fi
 
-docker build -t a1:b2 .
+docker build -t a:ab .
 
 dangling_docker=$(docker images -f 'dangling=true' -q)
 if [ -z "$dangling_docker" ]; then

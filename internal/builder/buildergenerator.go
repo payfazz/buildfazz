@@ -23,10 +23,20 @@ type Generator struct {
 
 func (g *Generator) getWorkingPath() string {
 	var result string
+	log.Println(g.Data.Pwd)
 	if strings.Index(g.Data.Base, "golang") != -1 {
-		var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
-		result = replacer.Replace(g.Data.Pwd)
-		result = fmt.Sprintf("%s/%s", "WORKDIR $GOPATH", result)
+		gopath := os.Getenv("GOPATH")
+		if gopath != "" {
+			var replacer= strings.NewReplacer(os.Getenv("GOPATH"), "")
+			result = replacer.Replace(g.Data.Pwd)
+			result = fmt.Sprintf("%s/%s", "WORKDIR $GOPATH", result)
+		} else {
+			split := strings.Split(g.Data.Pwd, "/")
+			ln := len(split)
+			projectName := split[ln-2]
+			projectGroup := split[ln-3]
+			result = fmt.Sprintf("WORKDIR /go/github.com/%s/%s", projectGroup, projectName)
+		}
 	}
 	return result
 }
