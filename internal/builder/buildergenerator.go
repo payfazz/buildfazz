@@ -26,7 +26,7 @@ func (g *Generator) getWorkingPath() string {
 	if strings.Index(g.Data.Base, "golang") != -1 {
 		var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
 		result = replacer.Replace(g.Data.Pwd)
-		result = fmt.Sprintf("%s%s", "WORKDIR $GOPATH/", result)
+		result = fmt.Sprintf("%s%s", "WORKDIR $GOPATH", result)
 	}
 	return result
 }
