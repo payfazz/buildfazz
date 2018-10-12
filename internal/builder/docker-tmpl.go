@@ -6,9 +6,10 @@ ADD . .
 
 $path
 
+$add-on
+
 RUN set -eux && rm -rf /logs && mkdir /logs && ln -sf /dev/stdout /logs/out.txt && ln -sf /dev/stderr /logs/err.txt
 
-$add-on
 $run
 
 FROM $os
