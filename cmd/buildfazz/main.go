@@ -51,7 +51,6 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 // get push options
 func getPushOption(args *[]string, mapper *map[string]string) {
 	for stat := true; stat; stat = len(*args) > 1 {
-		log.Println((*args)[0])
 		switch (*args)[0] {
 		case "-e":
 			if !mapOptions(args, mapper, "env") {
@@ -73,6 +72,7 @@ func getPushOption(args *[]string, mapper *map[string]string) {
 			}
 			break
 		default:
+
 			log.Fatalf("command not found! see: buildfazz push --help")
 			break
 		}
