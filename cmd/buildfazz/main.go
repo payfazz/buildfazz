@@ -16,6 +16,19 @@ func isset(arr []string, index int) bool {
 	return (len(arr) > index)
 }
 
+// splice array
+func removeStringFromArray(args *[]string, i int, length int) {
+	(*args)[i] = ""
+	*args = append((*args)[:i], (*args)[i+length:]...)
+}
+
+// swap array position to the end of elements
+func swapArrayToEnd (args *[]string, i int, length int) {
+	temp := (*args)[i]
+	*args = append((*args)[:i], (*args)[i+length:]...)
+	(*args)[length-1] = temp
+}
+
 // option mapper helper
 func mapOptions(args *[]string, mapper *map[string]string, val string) bool {
 	idx := 0
@@ -40,9 +53,6 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 			if !mapOptions(args, mapper, "os") {
 				log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
 			}
-			break
-		default:
-			log.Fatalf("command not found! see: buildfazz build --help")
 			break
 		}
 	}
@@ -72,17 +82,10 @@ func getPushOption(args *[]string, mapper *map[string]string) {
 			}
 			break
 		default:
-
-			log.Fatalf("command not found! see: buildfazz push --help")
+			swapArrayToEnd(args, 0, len(*args))
 			break
 		}
 	}
-}
-
-// splice array
-func removeStringFromArray(args *[]string, i int, length int) {
-	(*args)[i] = ""
-	*args = append((*args)[:i], (*args)[i+length:]...)
 }
 
 // args mapper helper
