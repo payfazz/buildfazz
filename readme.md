@@ -43,7 +43,7 @@ Build option list for build:<br />
 
 ### Push
 
-    buildfazz push name:tag -ssh user@127.0.0.1
+    buildfazz push name:tag --ssh user@127.0.0.1
 
 Use `buildfazz COMMAND --help` to see detail use for each command.
 

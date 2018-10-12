@@ -25,8 +25,7 @@ func removeStringFromArray(args *[]string, i int, length int) {
 // swap array position to the end of elements
 func swapArrayToEnd (args *[]string, i int, length int) {
 	temp := (*args)[i]
-	*args = append((*args)[:i], (*args)[i+length:]...)
-	(*args)[length-1] = temp
+	*args = append((*args)[(i+1):length], temp)
 }
 
 // option mapper helper
@@ -107,6 +106,15 @@ func getProjectProp(args *[]string, mapper *map[string]string) {
 	}
 }
 
+func isInArray(haystack []string, needle string) bool {
+	for _,v := range haystack {
+		if v == needle {
+			return true
+		}
+	}
+	return false
+}
+
 // parse arguments from user
 func argsParser(args []string) map[string]string {
 	mapper := make(map[string]string)
@@ -138,6 +146,11 @@ func argsParser(args []string) map[string]string {
 				os.Exit(0)
 			}
 			mapArgs(&args, &mapper, 0, "type", args[0])
+			if !isInArray(args, "--ssh") {
+				fmt.Println("--ssh not found")
+				fmt.Println(help.NewPushHelp().GenerateHelp())
+				os.Exit(0)
+			}
 			getPushOption(&args, &mapper)
 			break
 		}
@@ -177,5 +190,6 @@ func main() {
 	if bld == nil {
 		log.Fatalf("error occur!\n %s", help.NewBasicHelp().GenerateHelp())
 	}
+	log.Println(mapper)
 	bld.Start()
 }
