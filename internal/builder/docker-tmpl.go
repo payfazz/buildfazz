@@ -8,11 +8,15 @@ $path
 
 $add-on
 
-RUN set -eux && rm -rf /logs && mkdir /logs && ln -sf /dev/stdout /logs/out.txt && ln -sf /dev/stderr /logs/err.txt
-
 $run
 
 FROM $os
+
+RUN set -eux \
+ && mkdir /logs \
+ && ln -s /dev/stdout /logs/out.txt \
+ && ln -s /dev/stderr /logs/err.txt
+
 COPY --from=builder /app .
 ENTRYPOINT ["./app"]
 `
