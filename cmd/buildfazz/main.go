@@ -41,6 +41,9 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 				log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
 			}
 			break
+		default:
+			log.Fatalf("command not found! see: buildfazz build --help")
+			break
 		}
 	}
 }
@@ -48,6 +51,7 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 // get push options
 func getPushOption(args *[]string, mapper *map[string]string) {
 	for stat := true; stat; stat = len(*args) > 1 {
+		log.Println((*args)[0])
 		switch (*args)[0] {
 		case "-e":
 			if !mapOptions(args, mapper, "env") {
@@ -67,6 +71,9 @@ func getPushOption(args *[]string, mapper *map[string]string) {
 			if !mapOptions(args, mapper, "port") {
 				log.Fatalf("your path format is wrong! please use: -p [port]")
 			}
+			break
+		default:
+			log.Fatalf("command not found! see: buildfazz push --help")
 			break
 		}
 	}
@@ -112,22 +119,22 @@ func argsParser(args []string) map[string]string {
 	// remove index 0
 	removeStringFromArray(&args, 0, 1)
 	// search docker command
-	for k, v := range args {
-		switch v {
+	for stat := true; stat; stat = len(args) > 1 {
+		switch args[0] {
 		case "build":
-			if isset(args, k+1) && args[k+1] == "--help" {
+			if isset(args, 1) && args[1] == "--help" {
 				fmt.Println(help.NewBuildHelp().GenerateHelp())
 				os.Exit(0)
 			}
-			mapArgs(&args, &mapper, k, "type", v)
+			mapArgs(&args, &mapper, 0, "type", args[0])
 			getBuildOption(&args, &mapper)
 			break
 		case "push":
-			if isset(args, k+1) && args[k+1] == "--help" {
+			if isset(args, 1) && args[1] == "--help" {
 				fmt.Println(help.NewPushHelp().GenerateHelp())
 				os.Exit(0)
 			}
-			mapArgs(&args, &mapper, k, "type", v)
+			mapArgs(&args, &mapper, 0, "type", args[0])
 			getPushOption(&args, &mapper)
 			break
 		}
@@ -148,6 +155,7 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 }
 
 func main() {
+
 	var pwd string
 	// get args from user
 	mapper := argsParser(os.Args)
