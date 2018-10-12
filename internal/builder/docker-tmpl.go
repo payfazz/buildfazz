@@ -18,7 +18,7 @@ RUN set -eux \
  && ln -sf /dev/stderr /logs/err.log
 
 COPY --from=builder /app .
-ENTRYPOINT ["/bin/sh", "-c", "./app 1>>/logs/out.log 2>>/logs/err.log"]
+CMD exec ./app 1>>/logs/out.log 2>>/logs/err.log
 `
 
 var shTmpl = `#!/bin/sh
