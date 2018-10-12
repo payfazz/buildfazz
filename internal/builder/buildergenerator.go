@@ -35,7 +35,7 @@ func (g *Generator) getWorkingPath() string {
 			ln := len(split)
 			projectName := split[ln-2]
 			projectGroup := split[ln-3]
-			result = fmt.Sprintf("WORKDIR /go/github.com/%s/%s", projectGroup, projectName)
+			result = fmt.Sprintf("WORKDIR github.com/%s/%s", projectGroup, projectName)
 		}
 	}
 	return result
