@@ -31,3 +31,6 @@ vslaunch.json
 ### database file
 .postgres
 .redis
+
+*.exe
+*.yml
