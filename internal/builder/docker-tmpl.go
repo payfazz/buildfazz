@@ -14,11 +14,11 @@ FROM $os
 
 RUN set -eux \
  && mkdir /logs \
- && ln -sf /dev/stdout /logs/out.txt \
- && ln -sf /dev/stderr /logs/err.txt
+ && ln -sf /dev/stdout /logs/out.log \
+ && ln -sf /dev/stderr /logs/err.log
 
 COPY --from=builder /app .
-ENTRYPOINT ["./app"]
+CMD exec ./app 1>>/logs/out.log 2>>/logs/err.log
 `
 
 var shTmpl = `#!/bin/sh
