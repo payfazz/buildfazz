@@ -100,7 +100,6 @@ func getProjectProp(args *[]string, mapper *map[string]string) {
 	}
 	temp := strings.Split(project, ":")
 	(*mapper)["projectName"] = strings.ToLower(temp[0])
-	(*mapper)["projectTag"] = "latest"
 	if isset(temp, 1) && temp[1] != "" {
 		(*mapper)["projectTag"] = strings.ToLower(temp[1])
 	}

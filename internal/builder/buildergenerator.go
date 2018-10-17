@@ -27,7 +27,7 @@ func (g *Generator) getWorkingPath() string {
 	if strings.Index(g.Data.Base, "golang") != -1 {
 		gopath := os.Getenv("GOPATH")
 		if gopath != "" {
-			var replacer= strings.NewReplacer(os.Getenv("GOPATH"), "")
+			var replacer = strings.NewReplacer(os.Getenv("GOPATH"), "")
 			result = replacer.Replace(g.Data.Pwd)
 			result = fmt.Sprintf("%s/%s", "WORKDIR $GOPATH", result)
 		} else {
@@ -145,6 +145,9 @@ func (g *Generator) Start() {
 func NewBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInterface {
 	if mapper["os"] == "" {
 		mapper["os"] = "debian"
+	}
+	if data.Version != "" && mapper["projectTag"] == "" {
+		mapper["projectTag"] = data.Version
 	}
 	return &Generator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], os: mapper["os"]}
 }

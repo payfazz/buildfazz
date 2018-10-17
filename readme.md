@@ -25,7 +25,7 @@ See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfaz
 **fields**
 - base (project's base [golang/node/etc])
 - main (source target, example: cmd/buildfazz _or_ cmd/{your-project})
-
+- version (project version's, could be override in CLI)
 
 ### Command & Option
 
