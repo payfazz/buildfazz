@@ -1,8 +1,10 @@
 package pusher
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/payfazz/buildfazz/internal/builder"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -43,14 +45,23 @@ func (g *Generator) clearFiles() {
 }
 
 func (g *Generator) execSh() {
+	var stderrBuf bytes.Buffer
 	proj := fmt.Sprintf("%s:%s", g.projectName, g.projectTag)
 	cmd := exec.Command("/bin/sh", g.shPath, proj)
-	err := cmd.Start()
+	stderrIn, err := cmd.StderrPipe()
+	stderr := io.MultiWriter(os.Stderr, &stderrBuf)
+	err = cmd.Start()
 	if err != nil {
 		log.Fatalf("cmd.Start() failed with '%s'\n", err)
 	}
+	go func() {
+		io.Copy(stderr, stderrIn)
+	}()
 	err = cmd.Wait()
 	if err != nil {
+		if err, ok := err.(*exec.ExitError); ok {
+			log.Fatalf("%#v\n", string(err.Error()))
+		}
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 }
