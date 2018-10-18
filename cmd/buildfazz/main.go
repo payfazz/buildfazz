@@ -152,6 +152,9 @@ func argsParser(args []string) map[string]string {
 			}
 			getPushOption(&args, &mapper)
 			break
+		default:
+			fmt.Println(help.NewBasicHelp().GenerateHelp())
+			os.Exit(0)
 		}
 	}
 	getProjectProp(&args, &mapper)
