@@ -149,5 +149,8 @@ func NewBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInte
 	if data.Version != "" && mapper["projectTag"] == "" {
 		mapper["projectTag"] = data.Version
 	}
+	if mapper["projectTag"] == "" {
+		mapper["projectTag"] = "latest"
+	}
 	return &Generator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], os: mapper["os"]}
 }
