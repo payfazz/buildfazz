@@ -3,7 +3,6 @@ package pusher
 import (
 	"bytes"
 	"fmt"
-	"github.com/payfazz/buildfazz/internal/base"
 	"github.com/payfazz/buildfazz/internal/builder"
 	"io"
 	"log"
@@ -81,7 +80,7 @@ func (g *Generator) Start() {
 }
 
 // NewPusherGenerator ...
-func NewPusherGenerator(data base.Data , mapper map[string]string) builder.GeneratorInterface {
+func NewPusherGenerator( mapper map[string]string) builder.GeneratorInterface {
 	if mapper["port"] == "" {
 		mapper["port"] = "5000"
 	}
@@ -91,8 +90,8 @@ func NewPusherGenerator(data base.Data , mapper map[string]string) builder.Gener
 	if mapper["env"] == "mac" {
 		mapper["env"] = "docker.for.mac."
 	}
-	if data.Version != "" && mapper["projectTag"] == "" {
-		mapper["projectTag"] = data.Version
+	if mapper["projectTag"] == "" {
+		mapper["projectTag"] = "latest"
 	}
 	return &Generator{
 		projectName: mapper["projectName"],

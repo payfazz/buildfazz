@@ -167,7 +167,7 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 	case "build":
 		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper)
 	case "push":
-		return pusher.NewPusherGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper)
+		return pusher.NewPusherGenerator(mapper)
 	}
 	return nil
 }
