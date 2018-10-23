@@ -9,7 +9,7 @@ _BuildFazz_ is the docker image builder and pusher. Easy to use, help you create
 
 ##### Usage
 
-    buildfazz COMMAND [OPTIONS] [project-name]:[project-tag]
+    buildfazz COMMAND [OPTIONS] [project-name]:[project-version]
 
 ##### Help
     
@@ -35,7 +35,7 @@ Command list :
     
 ### Build
     
-    buildfazz build name:tag
+    buildfazz build project:version
     
 Build option list for build:<br />
 - -p        Set buildfazz working directory, default: current directory
