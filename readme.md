@@ -9,13 +9,12 @@ _BuildFazz_ is the docker image builder and pusher. Easy to use, help you create
 
 ##### Usage
 
-    buildfazz COMMAND [OPTIONS] {project-name}:"[project-tag]
+    buildfazz COMMAND [OPTIONS] [project-name]:[project-tag]
 
 ##### Help
     
     buildfazz --help
     
-   
    
     
 ### buildfazz.yml
@@ -23,6 +22,7 @@ You also need to specify the configuration file in **buildfazz.yml**. <br />
 See an example for `buildfazz.yml` in [here](https://github.com/payfazz/buildfazz/blob/master/buildfazz.yml).
 
 **fields**
+- project (project name)
 - base (project's base [golang/node/etc])
 - main (source target, example: cmd/buildfazz _or_ cmd/{your-project})
 - version (project version's, could be override in CLI)

@@ -1,3 +1,4 @@
+project: buildfazz
 base: golang:1.11
 main: cmd/buildfazz
 version: 0.0.1

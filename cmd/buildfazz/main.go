@@ -137,7 +137,12 @@ func argsParser(args []string) map[string]string {
 				os.Exit(0)
 			}
 			mapArgs(&args, &mapper, 0, "type", args[0])
-			getBuildOption(&args, &mapper)
+			if len(args) > 0 {
+				getBuildOption(&args, &mapper)
+			}
+			if len(args) > 0 {
+				getProjectProp(&args, &mapper)
+			}
 			break
 		case "push":
 			if isset(args, 1) && args[1] == "--help" {
@@ -151,13 +156,13 @@ func argsParser(args []string) map[string]string {
 				os.Exit(0)
 			}
 			getPushOption(&args, &mapper)
+			getProjectProp(&args, &mapper)
 			break
 		default:
 			fmt.Println(help.NewBasicHelp().GenerateHelp())
 			os.Exit(0)
 		}
 	}
-	getProjectProp(&args, &mapper)
 	return mapper
 }
 
@@ -165,7 +170,15 @@ func argsParser(args []string) map[string]string {
 func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 	switch mapper["type"] {
 	case "build":
-		return builder.NewBuilderGenerator(base.NewReaderConfig(mapper["pwd"]).Config, mapper)
+		cfg := base.NewReaderConfig(mapper["pwd"]).Config
+		if mapper["projectName"] != "" || cfg.ProjectName != "" {
+			if mapper["projectName"] == "" {
+				mapper["projectName"] = cfg.ProjectName
+			}
+			return builder.NewBuilderGenerator(cfg, mapper)
+		}
+		fmt.Println(help.NewBasicHelp().GenerateHelp())
+		os.Exit(0)
 	case "push":
 		return pusher.NewPusherGenerator(mapper)
 	}
@@ -173,7 +186,6 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 }
 
 func main() {
-
 	var pwd string
 	// get args from user
 	mapper := argsParser(os.Args)
