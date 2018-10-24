@@ -155,8 +155,12 @@ func argsParser(args []string) map[string]string {
 				fmt.Println(help.NewPushHelp().GenerateHelp())
 				os.Exit(0)
 			}
-			getPushOption(&args, &mapper)
-			getProjectProp(&args, &mapper)
+			if len(args) > 0 {
+				getPushOption(&args, &mapper)
+			}
+			if len(args) > 0 {
+				getProjectProp(&args, &mapper)
+			}
 			break
 		default:
 			fmt.Println(help.NewBasicHelp().GenerateHelp())
