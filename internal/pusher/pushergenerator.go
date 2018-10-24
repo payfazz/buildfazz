@@ -80,7 +80,7 @@ func (g *Generator) Start() {
 }
 
 // NewPusherGenerator ...
-func NewPusherGenerator( mapper map[string]string) builder.GeneratorInterface {
+func NewPusherGenerator(mapper map[string]string) builder.GeneratorInterface {
 	if mapper["port"] == "" {
 		mapper["port"] = "5000"
 	}

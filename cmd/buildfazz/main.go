@@ -168,9 +168,9 @@ func argsParser(args []string) map[string]string {
 
 // execute command
 func executeCommand(mapper map[string]string) builder.GeneratorInterface {
+	cfg := base.NewReaderConfig(mapper["pwd"]).Config
 	switch mapper["type"] {
 	case "build":
-		cfg := base.NewReaderConfig(mapper["pwd"]).Config
 		if mapper["projectName"] != "" || cfg.ProjectName != "" {
 			if mapper["projectName"] == "" {
 				mapper["projectName"] = cfg.ProjectName
@@ -180,6 +180,17 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 		fmt.Println(help.NewBasicHelp().GenerateHelp())
 		os.Exit(0)
 	case "push":
+		if mapper["projectName"] == "" && cfg.ProjectName != ""{
+			mapper["projectName"] = cfg.ProjectName
+		}
+		if mapper["projectTag"] == "" && cfg.Version != ""{
+			mapper["projectTag"] = cfg.Version
+		}
+		if mapper["projectName"] == "" {
+			fmt.Println("you need to define project name")
+			fmt.Println(help.NewBasicHelp().GenerateHelp())
+			os.Exit(0)
+		}
 		return pusher.NewPusherGenerator(mapper)
 	}
 	return nil
