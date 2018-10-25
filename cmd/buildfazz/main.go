@@ -172,9 +172,13 @@ func argsParser(args []string) map[string]string {
 
 // execute command
 func executeCommand(mapper map[string]string) builder.GeneratorInterface {
-	cfg := base.NewReaderConfig(mapper["pwd"]).Config
+	tempCfg, err := base.NewReaderConfig(mapper["pwd"])
 	switch mapper["type"] {
 	case "build":
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		cfg := tempCfg.Config
 		if mapper["projectName"] != "" || cfg.ProjectName != "" {
 			if mapper["projectName"] == "" {
 				mapper["projectName"] = cfg.ProjectName
@@ -184,6 +188,10 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 		fmt.Println(help.NewBasicHelp().GenerateHelp())
 		os.Exit(0)
 	case "push":
+		cfg := base.Data{}
+		if tempCfg != nil {
+			cfg = tempCfg.Config
+		}
 		if mapper["projectName"] == "" && cfg.ProjectName != ""{
 			mapper["projectName"] = cfg.ProjectName
 		}
