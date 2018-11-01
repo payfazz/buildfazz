@@ -12,6 +12,8 @@ $run
 
 FROM $os
 
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
 RUN set -eux \
  && mkdir /logs \
  && ln -sf /dev/stdout /logs/out.log \

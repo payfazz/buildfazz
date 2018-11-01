@@ -48,11 +48,11 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 				log.Fatalf("your path format is wrong! please use: -p [path]")
 			}
 			break
-		case "-os":
-			if !mapOptions(args, mapper, "os") {
-				log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
-			}
-			break
+		//case "-os":
+		//	if !mapOptions(args, mapper, "os") {
+		//		log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
+		//	}
+		//	break
 		}
 	}
 }

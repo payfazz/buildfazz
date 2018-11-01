@@ -39,7 +39,6 @@ Command list :
     
 Build option list for build:<br />
 - -p        Set buildfazz working directory, default: current directory
-- -os	    Set buildfazz default OS (options: debian/ubuntu/scratch/etc...), default: debian
 
 ### Push
 
