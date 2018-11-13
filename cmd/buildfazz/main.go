@@ -183,6 +183,9 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 			if mapper["projectName"] == "" {
 				mapper["projectName"] = cfg.ProjectName
 			}
+			if cfg.Base == "html" {
+				return builder.NewHtmlBuilderGenerator(cfg, mapper)
+			}
 			return builder.NewBuilderGenerator(cfg, mapper)
 		}
 		fmt.Println(help.NewBasicHelp().GenerateHelp())

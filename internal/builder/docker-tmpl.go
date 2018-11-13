@@ -23,6 +23,15 @@ COPY --from=builder /app .
 CMD exec ./app 1>>/logs/out.log 2>>/logs/err.log
 `
 
+var htmlTmpl = `
+FROM alpine:3.4
+RUN apk add --no-cache darkhttpd && mkdir -p /www
+VOLUME /www
+COPY . /www
+EXPOSE 80
+CMD ["darkhttpd", "/www"]
+`
+
 var shTmpl = `#!/bin/sh
 
 set -eux
