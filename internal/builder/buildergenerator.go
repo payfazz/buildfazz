@@ -147,7 +147,8 @@ func NewBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInte
 		mapper["os"] = "debian"
 	}
 	if data.Version != "" && mapper["projectTag"] == "" {
-		mapper["projectTag"] = data.Version
+		var ref, _ = base.GetRef(data.Pwd)
+		mapper["projectTag"] = data.Version + "-" + ref
 	}
 	if mapper["projectTag"] == "" {
 		mapper["projectTag"] = "latest"

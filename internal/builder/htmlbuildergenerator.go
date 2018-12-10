@@ -99,11 +99,11 @@ func (g *HtmlGenerator) Start() {
 // NewHtmlBuilderGenerator new builder generator objects
 func NewHtmlBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInterface {
 	if data.Version != "" && mapper["projectTag"] == "" {
-		mapper["projectTag"] = data.Version
+		var ref, _ = base.GetRef(data.Pwd)
+		mapper["projectTag"] = data.Version + "-" + ref
 	}
 	if mapper["projectTag"] == "" {
 		mapper["projectTag"] = "latest"
 	}
 	return &HtmlGenerator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"]}
 }
-
