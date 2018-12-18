@@ -2,12 +2,14 @@ package pusher
 
 import (
 	"fmt"
-	"github.com/payfazz/buildfazz/internal/builder"
 	"log"
 	"net"
 	"os"
 	"os/exec"
 	"time"
+
+	"github.com/payfazz/buildfazz/internal/builder"
+	"github.com/phayes/freeport"
 )
 
 // Generator ...
@@ -60,17 +62,21 @@ func waitPort(proto, address string, duration time.Duration) error {
 
 // Starts local SSH tunnel in port 5000 to the registry
 func (g *Generator) startTunnel() *exec.Cmd {
-	tun := fmt.Sprintf("5000:%s", g.server)
+	port, err := freeport.GetFreePort()
+	if err != nil {
+		log.Fatalln("failed to get open port")
+	}
+	tun := fmt.Sprintf("%v:%s", port, g.server)
 	cmd := exec.Command("ssh", "-NTL", tun, g.ssh)
 
 	if err := cmd.Start(); err != nil {
 		log.Fatalf("failed to create tunnel: %s\n", err)
 	} else {
-		log.Printf("starting tunnel to %s\n", g.ssh)
+		log.Printf("starting tunnel to %s on port %v\n", g.ssh, port)
 	}
 
 	timeout := 10 * time.Second
-	err := waitPort("tcp", "localhost:5000", timeout)
+	err = waitPort("tcp", fmt.Sprintf("localhost:%v", port), timeout)
 	if err != nil {
 		log.Fatalf("creating tunnel timed out after %v\n", timeout)
 	}
