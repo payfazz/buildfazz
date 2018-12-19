@@ -14,18 +14,19 @@ import (
 
 // Generator ...
 type Generator struct {
-	projectName string
-	projectTag  string
-	shPath      string
-	deployer    string
-	server      string
-	ssh         string
+	projectName string // Docker name
+	projectTag  string // Docker tag
+	shPath      string // Unused
+	deployer    string // Set to "docker.for.mac" for mac clients
+	server      string // Remote registry (host:port)
+	ssh         string // SSH server
 }
 
 // Create new docker tag
-func (g *Generator) createTag() string {
+func (g *Generator) createTag(port int) string {
+	server := fmt.Sprintf("localhost:%v", port)
 	oldtag := fmt.Sprintf("%s:%s", g.projectName, g.projectTag)
-	newtag := fmt.Sprintf("%s%s/%s", g.deployer, g.server, oldtag)
+	newtag := fmt.Sprintf("%s%s/%s", g.deployer, server, oldtag)
 
 	cmd := exec.Command("docker", "tag", oldtag, newtag)
 	cmd.Stdout = os.Stdout
@@ -61,7 +62,7 @@ func waitPort(proto, address string, duration time.Duration) error {
 }
 
 // Starts local SSH tunnel in port 5000 to the registry
-func (g *Generator) startTunnel() *exec.Cmd {
+func (g *Generator) startTunnel() (*exec.Cmd, int) {
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		log.Fatalln("failed to get open port")
@@ -83,7 +84,7 @@ func (g *Generator) startTunnel() *exec.Cmd {
 
 	log.Println("started tunnel")
 
-	return cmd
+	return cmd, port
 }
 
 // Stops SSH tunnel
@@ -102,18 +103,28 @@ func (g *Generator) pushTag(tag string) {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		log.Printf("failed to push tag %s: %s", tag, err)
+		log.Printf("failed to push tag %s: %s\n", tag, err)
 	} else {
-		log.Printf("pushed tag %s", tag)
+		log.Printf("pushed tag %s\n", tag)
+	}
+}
+
+// Remove local tag
+func (g *Generator) removeTag(tag string) {
+	cmd := exec.Command("docker", "rmi", tag)
+	if err := cmd.Run(); err != nil {
+		log.Printf("failed to remove tag %s. please remove it manually.", tag)
+	} else {
+		log.Printf("removed tag %s\n", tag)
 	}
 }
 
 func (g *Generator) execCommands() {
-	tag := g.createTag()
-	tun := g.startTunnel()
+	tun, port := g.startTunnel()
+	tag := g.createTag(port)
 	g.pushTag(tag)
+	g.removeTag(tag)
 	defer g.stopTunnel(tun)
-
 }
 
 // Start ...
