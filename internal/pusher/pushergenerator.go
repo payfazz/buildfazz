@@ -63,9 +63,17 @@ func waitPort(proto, address string, duration time.Duration) error {
 
 // Starts local SSH tunnel in port 5000 to the registry
 func (g *Generator) startTunnel() (*exec.Cmd, int) {
-	port, err := freeport.GetFreePort()
-	if err != nil {
-		log.Fatalln("failed to get open port")
+	var (
+		port int
+		err  error
+	)
+	if g.deployer == "" {
+		port, err = freeport.GetFreePort()
+		if err != nil {
+			log.Fatalln("failed to get open port")
+		}
+	} else {
+		port = 5000
 	}
 	tun := fmt.Sprintf("%v:%s", port, g.server)
 	cmd := exec.Command("ssh", "-NTL", tun, g.ssh)
