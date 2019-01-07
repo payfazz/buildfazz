@@ -48,6 +48,9 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 				log.Fatalf("your path format is wrong! please use: -p [path]")
 			}
 			break
+		case "-n":
+			mapArgs(args, mapper, 0, "nosuffix", "true")
+			break
 		//case "-os":
 		//	if !mapOptions(args, mapper, "os") {
 		//		log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
@@ -188,7 +191,7 @@ func executeCommand(mapper map[string]string) builder.GeneratorInterface {
 			}
 			return builder.NewBuilderGenerator(cfg, mapper)
 		}
-		fmt.Println(help.NewBasicHelp().GenerateHelp())
+		fmt.Println(help.NewBuildHelp().GenerateHelp())
 		os.Exit(0)
 	case "push":
 		cfg := base.Data{}
