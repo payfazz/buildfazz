@@ -3,12 +3,13 @@ package builder
 import (
 	"bytes"
 	"fmt"
-	"github.com/payfazz/buildfazz/internal/base"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/payfazz/buildfazz/internal/base"
 )
 
 // Generator payfazz builder generator
@@ -19,6 +20,7 @@ type Generator struct {
 	dockerfilePath string
 	shPath         string
 	os             string
+	generateOnly   bool
 }
 
 func (g *Generator) getWorkingPath() string {
@@ -131,11 +133,13 @@ func (g *Generator) clearFiles() {
 
 // Start start generator
 func (g *Generator) Start() {
-	g.generateSh()
 	g.generateDockerFile()
-	g.execSh()
-	defer func() {
+	if !g.generateOnly {
+		g.generateSh()
+		g.execSh()
 		g.clearFiles()
+	}
+	defer func() {
 		fmt.Println("build success")
 		os.Exit(0)
 	}()
@@ -156,5 +160,6 @@ func NewBuilderGenerator(data base.Data, mapper map[string]string) GeneratorInte
 		var ref, _ = base.GetRef(data.Pwd)
 		mapper["projectTag"] = mapper["projectTag"] + "-" + ref
 	}
-	return &Generator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], os: mapper["os"]}
+	generateOnly := mapper["generateOnly"] == "true"
+	return &Generator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], os: mapper["os"], generateOnly: generateOnly}
 }

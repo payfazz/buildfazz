@@ -3,12 +3,13 @@ package builder
 import (
 	"bytes"
 	"fmt"
-	"github.com/payfazz/buildfazz/internal/base"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/payfazz/buildfazz/internal/base"
 )
 
 // Generator payfazz builder generator
@@ -18,6 +19,7 @@ type HtmlGenerator struct {
 	projectTag     string
 	dockerfilePath string
 	shPath         string
+	generateOnly   bool
 }
 
 func (g *HtmlGenerator) generateDockerFile() {
@@ -86,11 +88,13 @@ func (g *HtmlGenerator) execSh() {
 
 // Start start generator
 func (g *HtmlGenerator) Start() {
-	g.generateSh()
 	g.generateDockerFile()
-	g.execSh()
-	defer func() {
+	if !g.generateOnly {
+		g.generateSh()
+		g.execSh()
 		g.clearFiles()
+	}
+	defer func() {
 		fmt.Println("build success")
 		os.Exit(0)
 	}()
@@ -105,5 +109,6 @@ func NewHtmlBuilderGenerator(data base.Data, mapper map[string]string) Generator
 	if mapper["projectTag"] == "" {
 		mapper["projectTag"] = "latest"
 	}
-	return &HtmlGenerator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"]}
+	generateOnly := mapper["generateOnly"] == "true"
+	return &HtmlGenerator{Data: data, projectName: mapper["projectName"], projectTag: mapper["projectTag"], generateOnly: generateOnly}
 }

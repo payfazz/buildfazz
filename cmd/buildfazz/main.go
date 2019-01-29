@@ -51,6 +51,9 @@ func getBuildOption(args *[]string, mapper *map[string]string) {
 		case "-n":
 			mapArgs(args, mapper, 0, "nosuffix", "true")
 			break
+		case "--generate":
+			mapArgs(args, mapper, 0, "generateOnly", "true")
+			break
 		//case "-os":
 		//	if !mapOptions(args, mapper, "os") {
 		//		log.Fatalf("your path format is wrong! please use: -os [debian/ubuntu/scratch]")
